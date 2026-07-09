@@ -1,14 +1,33 @@
 version: "3.8"
 
 services:
+  app:
+    build: .
+    container_name: edgecache-api
+
+    ports:
+      - "5049:5049"
+
+    env_file:
+      - .env
+
+    depends_on:
+      - redis
+
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     container_name: edgecache-redis
+
     restart: unless-stopped
+
     ports:
       - "6379:6379"
+
     volumes:
       - redis_data:/data
+
     command: redis-server --appendonly yes
 
 volumes:

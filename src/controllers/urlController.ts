@@ -3,6 +3,7 @@ import {
   createShortUrl,
   getOriginalUrl,
   getUserUrls,
+  deleteUrl,
 } from "../services/urlServices";
 import { AuthRequest } from "../middleware/authMiddleware";
 
@@ -86,6 +87,33 @@ export const getMyUrls = async (req: AuthRequest, res: Response) => {
       data: urls,
     });
   } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const deleteShortUrl = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!._id.toString();
+
+    const id = req.params.id as string;
+
+    await deleteUrl(id, userId);
+
+    return res.status(200).json({
+      success: true,
+      message: "URL deleted successfully",
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",

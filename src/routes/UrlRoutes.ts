@@ -4,12 +4,14 @@ import {
   shortenUrl,
   redirectToOriginalUrl,
   getMyUrls,
+  deleteShortUrl
 } from "../controllers/urlController";
 
 const router = Router();
 
 router.post("/shorten", protect, shortenUrl);
 router.get("/my", protect, getMyUrls);
+router.delete("/:id", protect, deleteShortUrl);
 router.get("/:shortId", redirectToOriginalUrl);
 
 

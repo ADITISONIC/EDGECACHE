@@ -269,6 +269,20 @@ Express API
 - URL Expiration Notifications
 
 ---
+## 📈 Performance
+
+Local benchmark performed using **autocannon** (50 concurrent connections for 20 seconds).
+
+| Metric | Result |
+|--------|--------|
+| Average Latency | **1.07 ms** |
+| Median Latency (P50) | **1 ms** |
+| Peak Throughput | **43K requests/sec** |
+| Average Requests/sec | **38.8K requests/sec** |
+| Total Requests | **778K in 20 seconds** |
+
+> Note: Benchmark was executed on a local development environment against the cached redirect endpoint.
+---
 
 # 💡 What I Learned
 

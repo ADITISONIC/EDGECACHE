@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
-import { createShortUrl, getOriginalUrl } from "../services/urlServices";
+import {
+  createShortUrl,
+  getOriginalUrl,
+  getUserUrls,
+} from "../services/urlServices";
+import { AuthRequest } from "../middleware/authMiddleware";
 
-export const shortenUrl = async (req: Request, res: Response) => {
+export const shortenUrl = async (req: AuthRequest, res: Response) => {
   try {
-    const { originalUrl,customAlias, expiresAt } = req.body;
+    const { originalUrl, customAlias, expiresAt } = req.body;
+    const userId = req.user._id.toString();
 
     if (!originalUrl) {
       return res.status(400).json({
@@ -12,7 +18,12 @@ export const shortenUrl = async (req: Request, res: Response) => {
       });
     }
 
-    const url = await createShortUrl(originalUrl, customAlias, expiresAt);
+    const url = await createShortUrl(
+      originalUrl,
+      userId,
+      customAlias,
+      expiresAt,
+    );
 
     return res.status(201).json({
       success: true,
@@ -55,6 +66,25 @@ export const redirectToOriginalUrl = async (
     }
 
     return res.redirect(originalUrl);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getMyUrls = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!._id.toString();
+
+    const urls = await getUserUrls(userId);
+
+    return res.status(200).json({
+      success: true,
+      count: urls.length,
+      data: urls,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

@@ -2,12 +2,23 @@ import Url from "../models/Url";
 import { generateShortId } from "../utils/generateShortId";
 import { getCache, setCache } from "../cache/cache";
 
-export const createShortUrl = async (originalUrl: string, expiresAt?: Date) => {
-  let shortId = generateShortId();
+export const createShortUrl = async (
+  originalUrl: string,
+  customAlias?: string,
+  expiresAt?: Date,
+) => {
+  let shortId = customAlias || generateShortId();
+  const existing = await Url.findOne({ shortId });
 
+  if (existing) {
+    throw new Error("Custom alias already exists");
+  }
+ 
   // Ensure shortId is unique
-  while (await Url.findOne({ shortId })) {
-    shortId = generateShortId();
+  if (!customAlias) {
+    while (await Url.findOne({ shortId })) {
+      shortId = generateShortId();
+    }
   }
 
   const url = await Url.create({
